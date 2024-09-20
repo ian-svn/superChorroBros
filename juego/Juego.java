@@ -425,7 +425,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
 			enemigos.add(new Enemigo(2320+35*40,300+enemi.getAlto(), TipoEnemigo.POLICIA, true,this));
 			enemigos.add(new Enemigo(2320+35*40,320+enemi.getAlto(), TipoEnemigo.POLICIA, true,this));
 
-			meta = new Meta(2320+38*36,340-meta.getAlto(),this);
+			meta = new Meta(2320+38*36,380-meta.getAlto(),this);
     		
             //enemigos.add(new Enemigo(700, 310, false, this));
             //enemigos.add(new Enemigo(1500, 310, false, this));

@@ -14,7 +14,8 @@ public class Jugador {
     private boolean crecido=false;
     private boolean onDoor=false;
     private boolean onGround=false;
-    private boolean left=false, right=false, jump=false, jumping=false;
+    private boolean left=false, right=false, jump=false, jumping=false, agachado=false;
+    private String ultimoLado = "Der";
     private ImageIcon sprite;
     private boolean vivo=true;
     private int ANCHO = 30, ALTO = 50;
@@ -23,6 +24,7 @@ public class Jugador {
     private int tempDaniado=80, tempD=tempDaniado, daniado=0;
     private ReproductorSonido rep;
     private boolean enmascarado=false;
+    private int anchoAux=ANCHO,altoAux=ALTO,auxxx=0;
     //private int tempSuspendido = 5, tempS = tempSalto;
     
     public Jugador() {
@@ -34,6 +36,8 @@ public class Jugador {
         perspectiva(juego.getNivel());
         this.x = x;
         this.y = y;
+        this.anchoAux=ANCHO;
+        this.altoAux=ALTO;
         this.onGround = false;
         this.rep = new ReproductorSonido();
         this.tempSalto=65; temp = tempSalto;
@@ -49,8 +53,16 @@ public class Jugador {
 	    		if(right) {
 	    			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeCorriendo1.png"));
 	        	    g.drawImage(sprite.getImage(), x, y+4, ANCHO+2+ANCHO/2, ALTO+2, null);
+	        	    ultimoLado="Der";
 	    		} else if(left) {
         			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeCorriendo2.png"));
+            	    g.drawImage(sprite.getImage(), x, y+4, ANCHO+2+ANCHO/2, ALTO+2, null);
+            	    ultimoLado="Izq";
+	    		} else if(agachado&&ultimoLado=="Der"){
+        			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeAgachadoD.png"));
+            	    g.drawImage(sprite.getImage(), x, y+4, ANCHO+2+ANCHO/2, ALTO+2, null);
+	    		} else if(agachado&&ultimoLado=="Izq") {
+        			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeAgachadoI.png"));
             	    g.drawImage(sprite.getImage(), x, y+4, ANCHO+2+ANCHO/2, ALTO+2, null);
 	    		} else {
 	    			sprite = new ImageIcon(getClass().getResource("/imagenes/ladronquieto.png")); 
@@ -118,6 +130,14 @@ public class Jugador {
 	    		}	
     		}
     		
+    		if(agachado&&auxxx==0) {
+    			setAlto(ALTO/2+ALTO/3);
+    			auxxx=1;
+    		} else if(!agachado){
+    			setAlto(altoAux);
+    			auxxx=0;
+    		}
+    		
     		if(jumping) {
     			if(vy%2==0) {
     				vy++;		
@@ -180,7 +200,7 @@ public class Jugador {
         if (key == KeyEvent.VK_SPACE || key == KeyEvent.VK_W) jump = true;
         if (key == KeyEvent.VK_ESCAPE) juego.pausa();
         if (key == KeyEvent.VK_S&&onDoor) juego.siguienteNivel();
-        if (key == KeyEvent.VK_S&&getAncho()==40&&getAlto()==70) agacharse();
+        if (key == KeyEvent.VK_S) agachado=true;
         if (key == KeyEvent.VK_ESCAPE&&juego.getPerder()) ;
         if (key == KeyEvent.VK_R&&juego.getPerder()) ;
     }
@@ -190,12 +210,14 @@ public class Jugador {
         if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A) left = false;
         if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) right = false;
         if (key == KeyEvent.VK_SPACE || key == KeyEvent.VK_W) jump = false;
+        //if (key == KeyEvent.VK_S) agachado=false;
     }
 
     public void resetPosition() {
         x = 50;
         y = 380-getAlto();
         onGround = false;
+        perspectiva(juego.getNivel());
     }
     
     public void revivir() {
@@ -324,7 +346,7 @@ public class Jugador {
     }
     
     public void agacharse() {
-    	// TODO
+    	agachado=true;
     }
     
     public void perspectiva(int nivel) {
@@ -335,14 +357,7 @@ public class Jugador {
         	auxx=3;
         	setTempSalto(65);
         	setVx(4);
-    	} else if(nivel==4) {
-        	setAlto(50);
-        	setAncho(30);
-        	setTempSalto(30);
-        	setVy(3);
-        	auxx=3;
-        	setVx(4);
-    	} else if(nivel==5) {
+    	} else if(nivel==4||nivel==5) {
         	setAlto(50);
         	setAncho(30);
         	setTempSalto(30);
