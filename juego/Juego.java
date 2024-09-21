@@ -45,6 +45,8 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     private static Font retroPerder;
     private static Font retroChi;
     private int tiempo=0;
+    static JFrame frame;
+    static Juego juego;
 
     public Juego() {
         this.setFocusable(true);
@@ -143,8 +145,13 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-    	int key = e.getKeyCode();
+    	
         menu=false;
+        
+        System.out.println("sd");
+        
+    	int key = e.getKeyCode();
+        
         if(key == KeyEvent.VK_R&&!jugador.getVivo()) {
         	aux=0;
         	nivel=1;
@@ -153,6 +160,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         if(key == KeyEvent.VK_ESCAPE&&!jugador.getVivo()) {
         	System.exit(0);
         }
+        
         jugador.keyPressed(e);
         
         //System.out.println(menu);
@@ -276,10 +284,10 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     }
     
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Super Chorro Bros");
+        frame = new JFrame("Super Chorro Bros");
         Juego game = new Juego();
 
-        frame.setSize(800, 430);
+        frame.setSize(800, 430);	
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
