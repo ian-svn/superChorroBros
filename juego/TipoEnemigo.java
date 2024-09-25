@@ -1,5 +1,5 @@
 package juego;
 
 public enum TipoEnemigo {
-	ANCIANA, POLICIA, JEFE
+	ANCIANA, POLICIA, POLICIACORRIENDO, JEFE
 }

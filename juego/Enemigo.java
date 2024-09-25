@@ -33,7 +33,7 @@ public class Enemigo{
 		this.tipoEnemigo=tipoEnemigo;
 		if(tipoEnemigo==tipoEnemigo.ANCIANA) {
 			this.sprite = new ImageIcon(getClass().getResource("/imagenes/vieja-1.png"));
-		} else if(tipoEnemigo==tipoEnemigo.POLICIA) {
+		} else if(tipoEnemigo==tipoEnemigo.POLICIA||tipoEnemigo==tipoEnemigo.POLICIACORRIENDO) {
 			this.sprite = new ImageIcon(getClass().getResource("/imagenes/policiaD.png"));
 		} /*else if(tipoEnemigo==tipoEnemigo.JEFE) {
 			this.sprite = new ImageIcon(getClass().getResource("/imagenes/vieja-1.png")); //jefe
@@ -52,7 +52,7 @@ public class Enemigo{
 			if(tipoEnemigo==tipoEnemigo.ANCIANA) {
 				sprite = new ImageIcon(getClass().getResource("/imagenes/vieja-1.png"));	
 			} 
-			if(tipoEnemigo==tipoEnemigo.POLICIA) {
+			if(tipoEnemigo==tipoEnemigo.POLICIA || tipoEnemigo==tipoEnemigo.POLICIACORRIENDO) {
 				sprite = new ImageIcon(getClass().getResource("/imagenes/policiaD.png"));	
 			} /*else if(tipoEnemigo==tipoEnemigo.JEFE) {sprite = new ImageIcon(getClass().getResource("/imagenes/vieja-3.png"));	}*/
 			aux=1;
@@ -61,7 +61,7 @@ public class Enemigo{
 			if(tipoEnemigo==tipoEnemigo.ANCIANA) {
 				sprite = new ImageIcon(getClass().getResource("/imagenes/vieja-2.png"));	
 			}
-			if(tipoEnemigo==tipoEnemigo.POLICIA) {
+			if(tipoEnemigo==tipoEnemigo.POLICIA || tipoEnemigo==tipoEnemigo.POLICIACORRIENDO) {
 				sprite = new ImageIcon(getClass().getResource("/imagenes/policiaD.png"));	
 			} /*else if(tipoEnemigo==tipoEnemigo.JEFE) {sprite = new ImageIcon(getClass().getResource("/imagenes/vieja-3.png"));	}*/
 			aux=0;
@@ -160,27 +160,27 @@ public class Enemigo{
     		
     		//System.out.println("left: " + left);
     		if(left) {
+    			if(tipoEnemigo==tipoEnemigo.POLICIACORRIENDO) {
+        			x-=3;
+    			}
     			x-=1;
         		//System.out.println("x: " + x);
     		}
     		
     		if(right) {
+    			if(tipoEnemigo==tipoEnemigo.POLICIACORRIENDO) {
+    				x+=3;
+    			}
     			x+=1;
     		}
+        	choque();
     	}
-    	choque();
     	//System.out.println("left: " + left + " right : " + right + " jump: " + jump + " jumping= " + jumping + " onGround: " + onGround);
 	}
 	
 	public void perspectiva(int nivel) {
-    	if(nivel==1) {
-        	setAlto(160);
-        	setAncho(100);
-    	} else if(nivel==2) {
-        	setAncho(160);
-    		setAlto(100);
-    	} else if(nivel==3) {
-        	setAlto(160);
+    	if(nivel==1||nivel==2||nivel==3) {
+        	setAlto(120);
         	setAncho(100);
     	} else if(nivel==4||nivel==5) {
         	setAlto(50);

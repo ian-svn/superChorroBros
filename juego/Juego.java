@@ -30,12 +30,13 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     private Camara camera;
     private int tamanioNivelX;
     private int tamanioNivelY;
-    private int nivel=1;
+    private int nivel=3;
     private int niveles=5;
     private int aux=0;
     private ImageIcon fondo;
     private ReproductorSonido rep;
-    private Meta meta=new Meta(1000,10,this);
+    private Meta meta=new Meta(1000,-50,this);
+    private Joya joya=new Joya(1000,-50,this);
     private boolean pausa=false;
     private boolean menu=true;
     private boolean perder=false;
@@ -47,6 +48,8 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     private int tiempo=0;
     static JFrame frame;
     static Juego juego;
+    
+    int tempSpawnPolicias = 300;
 
     public Juego() {
         this.setFocusable(true);
@@ -95,6 +98,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         perder(g);
         
         meta.paint(g);
+        joya.paint(g);
         
         jugador.paint(g2d);
         for (Obstaculo obstaculo : obstaculos) {
@@ -133,7 +137,6 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
 
     public void siguienteNivel() {
     	nivel++;
-    	getJugador().revivir();
     	aux=0;
     	resetGame();
     }
@@ -148,7 +151,6 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     	
         menu=false;
         
-        System.out.println("sd");
         
     	int key = e.getKeyCode();
         
@@ -156,6 +158,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         	aux=0;
         	nivel=1;
         	jugador.revivir();
+            unaVezz=true;
         }
         if(key == KeyEvent.VK_ESCAPE&&!jugador.getVivo()) {
         	System.exit(0);
@@ -190,6 +193,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     }
     
     private boolean ganar=false;
+    private boolean unaVezz=true;
     
     public void perder(Graphics g) {
     	
@@ -209,13 +213,16 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
 	        	rep.reproducir(30);
 	        	
         	}
-        	
+
+    		enemigos.clear();
+    		
             g.setColor(Color.GREEN);
             drawTextWithOutline(g, "¡ Ganaste !" , ((camera.getViewWidth()/3-size*7))+camera.getX(), (camera.getViewHeight()/3), Color.BLACK, Color.GREEN,retroTitulo);
         
-            drawTextWithOutline(g, "Presione [ESC] para cerrar el juego." , ((camera.getViewWidth()/3-size*6))+camera.getX(), camera.getViewHeight()/2+camera.getViewHeight()/3
-            		, Color.BLACK, Color.GREEN,retroChi);
-            drawTextWithOutline(g, "Presione [R] para reiniciar el juego." , ((camera.getViewWidth()/3-size*6))+camera.getX(), camera.getViewHeight()/2+camera.getViewHeight()/5, Color.BLACK, Color.GREEN,retroChi);
+            drawTextWithOutline(g, "Presione [ESC] para cerrar el juego." , ((camera.getViewWidth()/3-size*6))+camera.getX(), camera.getViewHeight()/2+camera.getViewHeight()/3,
+            		Color.BLACK, Color.GREEN,retroChi);
+            drawTextWithOutline(g, "Presione [R] para reiniciar el juego." , ((camera.getViewWidth()/3-size*6))+camera.getX(), camera.getViewHeight()/2+camera.getViewHeight()/5,
+            		Color.BLACK, Color.GREEN,retroChi);
         
         }
         
@@ -251,7 +258,12 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             rep.reproducir(15);
             auxi=false;
     	}
+
     	
+    	if(nivel==4&&jugador.getX()>=2200&&unaVezz) {
+    		enemigos.add(new Enemigo(2500, 100, TipoEnemigo.ANCIANA, true, this));
+    		unaVezz=false;
+    	}
     	
     }
     
@@ -296,6 +308,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     }
     
     private int unaVez=0;
+    private boolean onJoya=false;
     
     private void loadWorld() {
     	
@@ -326,6 +339,9 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             enemigos.add(new Enemigo(900, 200, TipoEnemigo.ANCIANA, true, this));
             
     		obstaculos.add(new Obstaculo(200, 340, false,nivel));
+    		obstaculos.add(new Obstaculo(200-40, 340, false,nivel));
+    		obstaculos.add(new Obstaculo(200, 340-40, false,nivel));
+    		obstaculos.add(new Obstaculo(200, 340, false,nivel));
     		//enemigos.add(new Enemigo(500, 330, true,  this));
     		//enemigos.add(new Enemigo(620, 330, false, this));
     		//obstaculos.add(new Obstaculo(960, 340, false,nivel));
@@ -341,21 +357,52 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     	} else if(nivel==2&&aux==0) {
     		
     		
-    		inicializarNivel("/imagenes/escenarionivel1piso2.png", 1080);
+    		inicializarNivel("/imagenes/escenarionivel1piso2.png", 2200);
+    		
     		for(int x=0;x<tamanioNivelX/40;x++) {
-    			obstaculos.add(new Obstaculo(x*40,380,false,nivel));
+    			if(!(x==22)&&!(x==23)&&!(x==24)&&!(x==25)&&!(x==31)&&!(x==32)&&!(x==33)&&!(x==34)&&!(x==35)&&!(x==36)&&!(x==37)&&!(x==38)&&!(x==39)&&!(x==40)&&!(x==41)&&!(x==42)&&!(x==43)&&!(x==44)&&!(x==45)&&!(x==46)&&!(x==47)&&!(x==48)&&!(x==49)&&!(x==50)) {
+    				obstaculos.add(new Obstaculo(x*40,380,false,nivel));		
+    			}
     		}
-    		meta = new Meta(760,150,this);
+    		
+    		obstaculos.add(new Obstaculo(33*40,340,false,nivel));
+    		obstaculos.add(new Obstaculo(34*40,340,false,nivel));
+    		
+    		obstaculos.add(new Obstaculo(38*40,340,false,nivel));
+    		obstaculos.add(new Obstaculo(39*40,340,false,nivel));
+
+    		obstaculos.add(new Obstaculo(45*40,340,false,nivel));
+    		obstaculos.add(new Obstaculo(46*40,340,false,nivel));
+    		
+    		for(int x=1;x<3;x++) {
+    			for(int y=0;y<3;y++) {
+    				if(!(x==0&&y==0)&&!(x==1&&y==0)&&!(x==0&&y==1)&&!(x==1&&y==1)){
+    					obstaculos.add(new Obstaculo(x*40+300,y*40+260,false,nivel));			
+    				}
+        		}
+    		}
+    		enemigos.add(new Enemigo(580, 240, TipoEnemigo.ANCIANA, true, this));
+    		
+    		for(int x=0;x<3;x++) {
+				obstaculos.add(new Obstaculo(x*40+600,200,false,nivel));		
+    		}
+			obstaculos.add(new BloqueRecompensa(40+600,-10,true,this));
+    		
+			//obstaculos.add(new Obstaculo(400,280,true,nivel));
+    		meta = new Meta(2040,150,this);
     		
     		
     	} else if(nivel==3&&aux==0) {
     		
     		
-    		inicializarNivel("/imagenes/escenarionivel1piso3.png", 1080);
+    		inicializarNivel("/imagenes/escenarionivel1piso3.png", 1000);
     		for(int x=0;x<tamanioNivelX/40;x++) {
     			obstaculos.add(new Obstaculo(x*40,380,false,nivel));
     		}
-    		meta = new Meta(760,150,this);
+    		
+    		
+    		joya = new Joya(700,230,this);
+    		meta = new Meta(790,30,this);
     		
     		
     	}
@@ -443,16 +490,73 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
 
     	} else if(nivel==5&&aux==0) {
 
-    		inicializarNivel("/imagenes/escenariodeciudadnivel2.png",3000);
+    		inicializarNivel("/imagenes/escenariodeciudadnivel2.png",5000);
 
     		for(int x=0;x<tamanioNivelX/40;x++) {
-    			obstaculos.add(new Obstaculo(x*40,380,false,nivel));
+    			if(!(x==20)&&!(x==21)&&!(x==22)&&!(x==23)&&!(x==24)) {
+    				obstaculos.add(new Obstaculo(x*40,380,false,nivel));		
+    			}
     		}
-    		enemigos.add(new Enemigo(400, 310, TipoEnemigo.ANCIANA, true, this));  
-            enemigos.add(new Enemigo(700, 310, TipoEnemigo.ANCIANA, true, this)); 
-            enemigos.add(new Enemigo(1500, 310, TipoEnemigo.ANCIANA, true, this));
-            enemigos.add(new Enemigo(2000, 310, TipoEnemigo.ANCIANA, true, this));
+    		
+            enemigos.add(new Enemigo(400, 310, TipoEnemigo.POLICIA, true, this)); 
+    		enemigos.add(new Enemigo(600, 310, TipoEnemigo.POLICIA, true, this));  
             
+            enemigos.add(new Enemigo(1500, 310, TipoEnemigo.POLICIA, true, this));
+            enemigos.add(new Enemigo(1700, 310, TipoEnemigo.POLICIA, true, this));
+            enemigos.add(new Enemigo(1900, 310, TipoEnemigo.POLICIA, true, this));
+            enemigos.add(new Enemigo(2200, 310, TipoEnemigo.POLICIA, true, this));
+            
+
+    		obstaculos.add(new Obstaculo(700,350,false,nivel));
+            
+
+    		obstaculos.add(new Obstaculo(1500,350,false,nivel));
+    		obstaculos.add(new Obstaculo(2400,350,false,nivel));
+    		
+
+    		obstaculos.add(new Obstaculo(2700,280,false,nivel));
+    		obstaculos.add(new Obstaculo(2740,280,false,nivel));
+    		obstaculos.add(new Obstaculo(2140,310,false,nivel));
+    		obstaculos.add(new BloqueRecompensa(2280,280,false,this));
+    		obstaculos.add(new Obstaculo(2780,280,false,nivel));
+    		
+
+            enemigos.add(new Enemigo(2700, 280, TipoEnemigo.POLICIACORRIENDO, true, this));
+            enemigos.add(new Enemigo(3700, 280, TipoEnemigo.POLICIACORRIENDO, false, this));
+            enemigos.add(new Enemigo(2740, 280, TipoEnemigo.POLICIACORRIENDO, true, this));
+            enemigos.add(new Enemigo(3740, 280, TipoEnemigo.POLICIACORRIENDO, false, this));
+
+    		obstaculos.add(new Obstaculo(2700,280,false,nivel));
+    		obstaculos.add(new Obstaculo(2740,280,false,nivel));
+    		obstaculos.add(new Obstaculo(2700,280,false,nivel));
+    		obstaculos.add(new Obstaculo(2740,280,false,nivel));
+
+    		obstaculos.add(new Obstaculo(3780,300,false,nivel));
+    		obstaculos.add(new Obstaculo(3780,340,false,nivel));
+    		obstaculos.add(new Obstaculo(3740,340,false,nivel));
+    		
+    		obstaculos.add(new Obstaculo(3800,200,true,nivel));
+    		obstaculos.add(new Obstaculo(3940,200,true,nivel));
+    		obstaculos.add(new Obstaculo(4000,200,true,nivel));
+    		obstaculos.add(new Obstaculo(4140,200,true,nivel));
+
+    		obstaculos.add(new Obstaculo(4540,340,false,nivel));
+    		obstaculos.add(new Obstaculo(4640,380,false,nivel));
+    		
+
+    		obstaculos.add(new Obstaculo(4540,340,true,nivel));
+    		Obstaculo ob = new Obstaculo(4640,380,false,nivel);
+    		obstaculos.add(ob);
+    		
+
+    	}
+    	
+    	if(nivel==5&&!(getJugador().getX()>=tamanioNivelX&&nivel==niveles)){
+    		tempSpawnPolicias--;
+    		if(tempSpawnPolicias<=0) {
+    			enemigos.add(new Enemigo(camera.getX()+50, 240, TipoEnemigo.POLICIACORRIENDO, false, this));
+    			tempSpawnPolicias=30;
+    		}
     	}
     	
     	if(unaVez==0&&nivel==2&&getJugador().getVivo()&&getJugador().getX()>2100) {
@@ -552,5 +656,9 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
 		objetosRec.clear();
     	tamanioNivelX=tamanioNivel;
 		camera = new Camara(0, 0, 800, 400, tamanioNivelX);
+    }
+    
+    public Joya getJoya() {
+    	return joya;
     }
 }

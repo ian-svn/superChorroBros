@@ -15,14 +15,16 @@ public class Meta{
 	private ImageIcon flecha;
 	private boolean destruido;
 	
-	public Meta(int x, int y,Juego juego) {
+	public Meta(int x, int y, Juego juego) {
 		this.x = x;
 		this.y = y;
 		this.juego = juego;
         perspectiva(juego.getNivel());
         
-        if(juego.getNivel()==3) {
+        if(juego.getNivel()==2) {
         	sprite = new ImageIcon(getClass().getResource("/imagenes/puertaparaelpiso2alpiso3.png"));
+        } else if(juego.getNivel()==3){
+        	sprite = new ImageIcon(getClass().getResource("/imagenes/ventana.png"));
         } else {
             sprite=new ImageIcon(getClass().getResource("/imagenes/escalera.png"));
         }
@@ -74,8 +76,8 @@ public class Meta{
 	
 	public void perspectiva(int nivel) {
     	if(nivel==1||nivel==2||nivel==3) {
-        	setAncho(200);
-        	setAlto(250);
+        	setAncho(180);
+        	setAlto(220);
     	} else if(nivel==4||nivel==5) {
         	setAlto(50);
         	setAncho(40);

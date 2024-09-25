@@ -13,6 +13,7 @@ public class Jugador {
     private int auxx=vy;
     private boolean crecido=false;
     private boolean onDoor=false;
+    private boolean onJoya=false;
     private boolean onGround=false;
     private boolean left=false, right=false, jump=false, jumping=false, agachado=false;
     private String ultimoLado = "Der";
@@ -21,7 +22,8 @@ public class Jugador {
     private int ANCHO = 30, ALTO = 50;
     private int tempSalto, temp = tempSalto;
     private int tempCorrer, tempC = tempCorrer;
-    private int tempDaniado=80, tempD=tempDaniado, daniado=0;
+    private int tempAgachado, tempA = tempAgachado;
+    private int tempDaniado, tempD=tempDaniado, daniado;
     private ReproductorSonido rep;
     private boolean enmascarado=false;
     private int anchoAux=ANCHO,altoAux=ALTO,auxxx=0;
@@ -42,6 +44,8 @@ public class Jugador {
         this.rep = new ReproductorSonido();
         this.tempSalto=65; temp = tempSalto;
         this.tempCorrer=30; tempC = tempCorrer;
+        this.tempAgachado=100; tempA = tempAgachado;
+        this.tempDaniado=80; tempD=tempDaniado; daniado=0;
 	    rep.cargarSonido("sonidos/saltoMario.wav",false);
     }
 
@@ -50,7 +54,16 @@ public class Jugador {
     public void paint(Graphics g) {
     	if(vivo) {
     		if(daniado==0) {
-	    		if(right) {
+
+    			 if(agachado&&right){
+         			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeAgachadoD.png"));
+             	    g.drawImage(sprite.getImage(), x, y+4, ANCHO, ALTO+2, null);
+	        	    ultimoLado="Der";
+ 	    		} else if(agachado&&left) {
+         			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeAgachadoI.png"));
+             	    g.drawImage(sprite.getImage(), x, y+4, ANCHO, ALTO+2, null);
+            	    ultimoLado="Izq";
+ 	    		} else if(right) {
 	    			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeCorriendo1.png"));
 	        	    g.drawImage(sprite.getImage(), x, y+4, ANCHO+2+ANCHO/2, ALTO+2, null);
 	        	    ultimoLado="Der";
@@ -58,13 +71,16 @@ public class Jugador {
         			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeCorriendo2.png"));
             	    g.drawImage(sprite.getImage(), x, y+4, ANCHO+2+ANCHO/2, ALTO+2, null);
             	    ultimoLado="Izq";
-	    		} else if(agachado&&ultimoLado=="Der"){
-        			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeAgachadoD.png"));
-            	    g.drawImage(sprite.getImage(), x, y+4, ANCHO, ALTO+2, null);
-	    		} else if(agachado&&ultimoLado=="Izq") {
-        			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeAgachadoI.png"));
-            	    g.drawImage(sprite.getImage(), x, y+4, ANCHO, ALTO+2, null);
-	    		} else {
+	    		} else if(agachado) {
+	    			if(ultimoLado=="Der") {
+	         			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeAgachadoD.png"));
+	             	    g.drawImage(sprite.getImage(), x, y+4, ANCHO, ALTO+2, null);
+		    		} else {
+	         			sprite= new ImageIcon(getClass().getResource("/imagenes/personajeAgachadoI.png"));
+	             	    g.drawImage(sprite.getImage(), x, y+4, ANCHO, ALTO+2, null);
+	    			}
+	    		}
+	    		else {
 	    			sprite = new ImageIcon(getClass().getResource("/imagenes/ladronquieto.png")); 
 	    			g.drawImage(sprite.getImage(), x, y+4, ANCHO-ANCHO/10, ALTO+2, null);
 	    		}
@@ -82,13 +98,19 @@ public class Jugador {
     		}
     	    moverse();
     	}
+    	
+    	//g.fillRect(x-auxAncho/2, y-110, auxAncho*3+auxAncho/3, auxAlto);
     }
     
     private int tempCaida=5,tempCaidaAux=tempCaida;
+    private int auxAgachado=0;
     
     public void moverse() {
     	//System.out.println("vivo: " + vivo);
     	if(vivo) {
+    		if(agachado&&jump) {
+    			jump=false;
+    		}
     		for(Obstaculo obstaculo : juego.getObstaculos()) {
     			Rectangle2D obstaculoReact = obstaculo.getBounds();
     			Rectangle2D jugadorReact = new Rectangle2D.Double(x+3,y,ANCHO,ALTO);
@@ -122,7 +144,7 @@ public class Jugador {
 	    			Rectangle2D obstaculoReactArriba = obstaculo.getBoundsGolpear();
 	    			Rectangle2D jugadorReact = getBounds();
 	    			
-	    			if(jugadorReact.intersects(obstaculoReactArriba)&&obstaculo.getRecompensa()) {
+	    			if(jugadorReact.intersects(obstaculoReactArriba)) {
 	    				onGround=false;
 	    				jumping=false;
 	    				break;
@@ -175,24 +197,49 @@ public class Jugador {
     			}
     		}
     	}
-    	if((x<=0-ANCHO || x>=juego.getTamanioNivelX()+ANCHO)||(y<=0-ALTO||y>=juego.getTamanioNivelY()-ALTO)) {
+    	if((x<=0-ANCHO || x>=juego.getTamanioNivelX()+ANCHO)|| y>=juego.getTamanioNivelY()-ALTO) {
     		morir();
     	}
     	
+    	if(agachado) {
+    		if(juego.getNivel()>=1&&juego.getNivel()<=3) {
+    			ALTO=100;
+    		} else {
+    			ALTO=30;
+    		}
+    	}
+    	
+    	if(!onGround&&!agachado) {
+        	perspectiva(juego.getNivel());
+    	}
     	//System.out.println("left: " + left + " right : " + right + " jump: " + jump + " jumping= " + jumping + " onGround: " + onGround);
     	//if(left||right||jump) {
     		//System.out.println(x);		
     	//}
+    	
+    	tempAgachado--;
+    	
+    	//System.out.println("x: " + x + " y: " + y);
     }
 
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A) left = true;
         if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) right = true;
-        if (key == KeyEvent.VK_SPACE || key == KeyEvent.VK_W) jump = true;
+        if (key == KeyEvent.VK_SPACE || key == KeyEvent.VK_W) {
+        	jump = true;
+        	desagacharse();
+        }
         if (key == KeyEvent.VK_ESCAPE) juego.pausa();
-        if (key == KeyEvent.VK_S&&onDoor) juego.siguienteNivel();
-        if (key == KeyEvent.VK_S) agachado=true;
+        if (key == KeyEvent.VK_E&&onDoor) {
+        	if(juego.getNivel()!=3) {
+            	juego.siguienteNivel();
+        	} else if(juego.getNivel()==3&&juego.getJoya().getConsumido()) {
+            	juego.siguienteNivel();
+        	}
+        }
+        if (key == KeyEvent.VK_E&&juego.getJoya().getOnPersonaje()) juego.getJoya().consumir();
+        if (key == KeyEvent.VK_S&&tempAgachado<=0) agacharse();
         if (key == KeyEvent.VK_ESCAPE&&juego.getPerder()) ;
         if (key == KeyEvent.VK_R&&juego.getPerder()) ;
     }
@@ -202,24 +249,24 @@ public class Jugador {
         if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A) left = false;
         if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) right = false;
         if (key == KeyEvent.VK_SPACE || key == KeyEvent.VK_W) jump = false;
-        if (key == KeyEvent.VK_S) desagacharse();
+        if (key == KeyEvent.VK_S&&onGround) desagacharse();
     }
 
     public void resetPosition() {
         x = 50;
-        y = 380-getAlto();
+        y = 340-getAlto();
         onGround = false;
-        perspectiva(juego.getNivel());
+        revivir();
     }
     
     public void revivir() {
-        perspectiva(juego.getNivel());
     	vivo=true;
         left=false; 
         right=false; 
         jump=false; 
         jumping=false;
-        resetPosition(); 
+        agachado=false;
+        perspectiva(juego.getNivel());
     }
     
     public boolean getIzq() {
@@ -299,15 +346,20 @@ public class Jugador {
     	onDoor = false;
     }
     
+    public void sobreJoya() {
+    	onJoya = true;
+    }
+    
+    public void noSobreJoya() {
+    	onJoya = false;
+    }
+    
     public boolean getOnDoor() {
     	return onDoor;
     }
     
     public void enmascarar() {
-    	setAncho(35);
-    	setAlto(70);
     	enmascarado=true;
-    	y-=20;
     }
 
     public void achicar() {
@@ -338,23 +390,36 @@ public class Jugador {
     }
     
     public void agacharse() {
-		setAlto(ALTO/2);
 		agachado=true;
+		tempAgachado=tempA;
     }
     
     public void desagacharse() {
-		setAlto(altoAux);
+    	if(agachado&&onGround) {
+    		Rectangle2D jugadorReact = getBoundsChoque(110);
+    		for(Obstaculo obstaculo : juego.getObstaculos()) {
+        		Rectangle2D obstaculoReact = obstaculo.getBounds();
+        		if(obstaculoReact.intersects(jugadorReact)){
+        			return;
+        		}
+    		}
+    		if(juego.getNivel()>=1&&juego.getNivel()<=3) {
+    			y-=110;
+    		} else {
+    			y-=25;
+    		}
+    	}
 		agachado=false;
     }
     
     public void perspectiva(int nivel) {
     	if(nivel==1||nivel==2||nivel==3) {
-        	setAlto(200);
-        	setAncho(100);
+        	setAlto(160);
+        	setAncho(80);
         	setVy(3);
         	auxx=3;
-        	setTempSalto(65);
-        	setVx(4);
+        	setTempSalto(45);
+        	setVx(4);        	
     	} else if(nivel==4||nivel==5) {
         	setAlto(50);
         	setAncho(30);
@@ -373,5 +438,12 @@ public class Jugador {
     
     public Rectangle2D getBounds() {
 		return new Rectangle2D.Double(x, y, ANCHO, ALTO);
+	}
+    
+    private int auxAncho = ANCHO;
+    private int auxAlto = ALTO;
+    
+    public Rectangle2D getBoundsChoque(int loQueSube) {
+		return new Rectangle2D.Double(x-auxAncho/2, y-110, auxAncho*3+auxAncho/3, auxAlto);
 	}
 }

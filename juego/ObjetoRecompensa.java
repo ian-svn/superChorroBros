@@ -27,8 +27,8 @@ public class ObjetoRecompensa {
 		this.jugador=juego.getJugador();
 		this.consumido = false;
 		this.left=left;
-		//this.numeroRandom = (int)(Math.random() * 10);
-		this.numeroRandom = 5;
+		this.numeroRandom = (int)(Math.random() * 10);
+		//this.numeroRandom = 5;
 		if(numeroRandom>=0&&numeroRandom<=3) {
 			ANCHO=40;//morir
 			ALTO=40;

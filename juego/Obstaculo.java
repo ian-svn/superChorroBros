@@ -49,19 +49,18 @@ public class Obstaculo {
     }
     
     public void update() {
-    	if(!destruido) {
-	        if (moving) {
-	            x += 2 * direction;
-	            if (x < startX || x > startX + moveRange) {
-	                direction *= -1; // Reverse direction when hitting range limits
-	            }
-	        }
-    	}
+        if (moving) {
+            x += 2 * direction;
+            if (x < startX || x > startX + moveRange) {
+                direction *= -1; // Reverse direction when hitting range limits
+            }
+        }
     }
 
     public void paint(Graphics g) {
     	if(!destruido) {
     		g.drawImage(sprite.getImage(), x, y, ANCHO, ALTO,null);
+    		update();
             //g.setColor(Color.RED);
             //g.fillRect(getX(), getY()-getAlto()/8, getAncho(), getAlto()-getAlto()/2-getAlto()/3);
     	}
