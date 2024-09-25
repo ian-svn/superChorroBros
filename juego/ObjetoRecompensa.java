@@ -32,7 +32,7 @@ public class ObjetoRecompensa {
 		if(numeroRandom>=0&&numeroRandom<=3) {
 			ANCHO=40;//morir
 			ALTO=40;
-			sprite=new ImageIcon(getClass().getResource("/imagenes/bloqueespecial.png"));
+			sprite=new ImageIcon(getClass().getResource("/imagenes/pala.png"));
 		} else if (numeroRandom>=4&&numeroRandom<=8) {
 			ANCHO=40;//mascara
 			ALTO=30;
